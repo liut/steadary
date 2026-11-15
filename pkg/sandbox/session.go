@@ -277,8 +277,10 @@ func startShell(cmd *exec.Cmd, stderr *bytes.Buffer) (ptmx *os.File, alive bool,
 	go func() { waitCh <- cmd.Wait() }()
 
 	select {
-	case <-waitCh:
-		// 100ms 内退出：进程已由探测 goroutine 回收，ProcessState 可用
+	case waitErr := <-waitCh:
+		// 100ms 内退出：进程已由探测 goroutine 回收，ProcessState 可用。
+		// 把 Wait 结果放回通道，供 waitExit 消费。
+		waitCh <- waitErr
 		return ptmx, false, waitCh, nil
 	case <-time.After(100 * time.Millisecond):
 		return ptmx, true, waitCh, nil

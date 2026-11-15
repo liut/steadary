@@ -124,7 +124,7 @@ func normalizeEditArguments(args map[string]any, name string) ([]editReplacement
 			return nil, err
 		}
 		if len(items) == 0 {
-			return nil, fmt.Errorf("Edit tool input is invalid. edits must contain at least one replacement.")
+			return nil, fmt.Errorf("edit tool input is invalid: edits must contain at least one replacement")
 		}
 		rawItems = items
 	} else {
@@ -135,7 +135,7 @@ func normalizeEditArguments(args map[string]any, name string) ([]editReplacement
 	for i, rawItem := range rawItems {
 		item, ok := rawItem.(map[string]any)
 		if !ok {
-			return nil, fmt.Errorf("Edit tool input is invalid. edits[%d] must be an object.", i)
+			return nil, fmt.Errorf("edit tool input is invalid: edits[%d] must be an object", i)
 		}
 		oldText, ok := item["oldText"].(string)
 		if !ok {
@@ -143,13 +143,13 @@ func normalizeEditArguments(args map[string]any, name string) ([]editReplacement
 		}
 		if oldText == "" {
 			if len(rawItems) == 1 {
-				return nil, fmt.Errorf("oldText must not be empty in %s.", name)
+				return nil, fmt.Errorf("oldText must not be empty in %s", name)
 			}
-			return nil, fmt.Errorf("edits[%d].oldText must not be empty in %s.", i, name)
+			return nil, fmt.Errorf("edits[%d].oldText must not be empty in %s", i, name)
 		}
 		newText, ok := item["newText"].(string)
 		if !ok {
-			return nil, fmt.Errorf("edits[%d].newText is required in %s.", i, name)
+			return nil, fmt.Errorf("edits[%d].newText is required in %s", i, name)
 		}
 		replacements = append(replacements, editReplacement{oldText: oldText, newText: newText})
 	}
@@ -169,7 +169,7 @@ func decodeEditItems(value any) ([]any, error) {
 	case map[string]any:
 		return []any{v}, nil
 	case nil:
-		return nil, fmt.Errorf("Edit tool input is invalid. edits must contain at least one replacement.")
+		return nil, fmt.Errorf("edit tool input is invalid: edits must contain at least one replacement")
 	default:
 		return nil, fmt.Errorf("edits must be an array, object, or JSON-encoded array or object")
 	}
@@ -268,7 +268,7 @@ func detectOverlaps(matches []editMatch, name string) error {
 	})
 	for i := 1; i < len(ordered); i++ {
 		if ordered[i].start < ordered[i-1].end {
-			return fmt.Errorf("edits[%d] and edits[%d] overlap in %s. Merge them into one edit or target disjoint regions.",
+			return fmt.Errorf("edits[%d] and edits[%d] overlap in %s. Merge them into one edit or target disjoint regions",
 				ordered[i-1].index, ordered[i].index, name)
 		}
 	}
@@ -277,9 +277,9 @@ func detectOverlaps(matches []editMatch, name string) error {
 
 func notFoundEditError(index, total int, name string) error {
 	if total == 1 {
-		return fmt.Errorf("Could not find the exact text in %s. The old text must match exactly including all whitespace and newlines.", name)
+		return fmt.Errorf("could not find the exact text in %s. The old text must match exactly including all whitespace and newlines", name)
 	}
-	return fmt.Errorf("Could not find edits[%d] in %s. The old text must match exactly including all whitespace and newlines.", index, name)
+	return fmt.Errorf("could not find edits[%d] in %s. The old text must match exactly including all whitespace and newlines", index, name)
 }
 
 func duplicateEditError(index, count int, positions []int, text string, total int, name string) error {

@@ -111,7 +111,7 @@ func TestEditFallbackDoesNotNormalizeIndentation(t *testing.T) {
 	_, err := applyEdits("head\n  item\n", []editReplacement{
 		{oldText: "\nitem\n", newText: "\nchanged\n"},
 	}, "file.txt")
-	if err == nil || !strings.Contains(err.Error(), "Could not find the exact text") {
+	if err == nil || !strings.Contains(err.Error(), "could not find the exact text") {
 		t.Fatalf("error=%v", err)
 	}
 }
@@ -127,7 +127,7 @@ func TestEditValidationErrors(t *testing.T) {
 			name:         "missing",
 			source:       "same\nsame\n",
 			replacements: []editReplacement{{oldText: "absent", newText: "x"}},
-			want:         "Could not find the exact text",
+			want:         "could not find the exact text",
 		},
 		{
 			name:         "duplicate",
@@ -219,7 +219,7 @@ func TestNormalizeEditArgumentsSingleEmptyOldTextMessage(t *testing.T) {
 	}
 	for i, args := range cases {
 		_, err := normalizeEditArguments(args, "file.txt")
-		if err == nil || err.Error() != "oldText must not be empty in file.txt." {
+		if err == nil || err.Error() != "oldText must not be empty in file.txt" {
 			t.Errorf("case %d error=%v", i, err)
 		}
 	}
@@ -233,7 +233,7 @@ func TestNormalizeEditArgumentsMultipleEmptyOldTextMessage(t *testing.T) {
 			map[string]any{"oldText": "", "newText": "c"},
 		},
 	}, "file.txt")
-	if err == nil || err.Error() != "edits[1].oldText must not be empty in file.txt." {
+	if err == nil || err.Error() != "edits[1].oldText must not be empty in file.txt" {
 		t.Fatalf("error=%v", err)
 	}
 }
@@ -287,7 +287,7 @@ func TestEditMultipleReplacementErrorMessages(t *testing.T) {
 				{oldText: "present", newText: "changed"},
 				{oldText: "absent", newText: "other"},
 			},
-			want: "Could not find edits[1] in file.txt. The old text must match exactly including all whitespace and newlines.",
+			want: "could not find edits[1] in file.txt. The old text must match exactly including all whitespace and newlines",
 		},
 		{
 			name:   "duplicate first edit",
