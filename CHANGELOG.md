@@ -1,11 +1,14 @@
 # Changelog
 
-## Unreleased
+## v0.3.0
+
+Renamed the project from Strata to Steadary across its source, runtime, build, deployment, and documentation identity, while leaving every API contract unchanged.
 
 ### Changed
 
 - **Rename**: the project is now Steadary. The CLI command, the `STEADARY_*` environment variable prefix, the default session root (`/tmp/steadary/sessions`), build artifacts, container images, container names, and volume names all use the new identity
 - **Hard break**: the old `strata` executable and the `STRATA_*` environment variables are no longer recognized; there are no compatibility aliases
+- **Go module**: the module path is now `github.com/liut/steadary`
 
 ### Compatibility
 
@@ -15,10 +18,16 @@
 - The MCP API is unchanged: the endpoint remains `/mcp/`, and the core tools remain `exec`, `read`, `write`, and `edit` with unchanged argument names. Only the server display name changed
 - The StdIO wrapper keeps its `strata_exec` and `strata_stats` tool identifiers, which are part of that wrapper's own MCP contract
 
+### Upgrade Notes
+
+- **Silent fallback**: obsolete `STRATA_*` environment variables are ignored without error, so an upgraded deployment that still sets them falls back to the Steadary defaults — for example `STRATA_SERVER_ADDR` now resolves to `:2280`. Rename them before upgrading
+- The old `strata` command no longer exists; use `steadary`
+- The default listen port remains `2280`
+
 ### Notes
 
 - Existing session directories and named volumes are not migrated; treat them as disposable runtime state and roll over with explicit configuration
-- The default listen port remains `2280`
+- Added contract tests that pin the REST route methods, the WebSocket message shapes, the gRPC service descriptor and full method names, and the MCP tool inventory independently of the server display name
 
 ## v0.2.0
 
