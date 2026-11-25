@@ -8,7 +8,7 @@ import (
 // TestManagerConfig 测试 ManagerConfig 结构体
 func TestManagerConfig(t *testing.T) {
 	cfg := ManagerConfig{
-		SessionRoot: "/tmp/strata/sessions",
+		SessionRoot: "/tmp/steadary/sessions",
 		BaseRootfs:  "",
 		Driver:      DriverNone,
 		IsolateNet:  false,
@@ -16,8 +16,8 @@ func TestManagerConfig(t *testing.T) {
 		MaxSessions: 100,
 	}
 
-	if cfg.SessionRoot != "/tmp/strata/sessions" {
-		t.Errorf("SessionRoot = %q, want %q", cfg.SessionRoot, "/tmp/strata/sessions")
+	if cfg.SessionRoot != "/tmp/steadary/sessions" {
+		t.Errorf("SessionRoot = %q, want %q", cfg.SessionRoot, "/tmp/steadary/sessions")
 	}
 	if cfg.MaxSessions != 100 {
 		t.Errorf("MaxSessions = %d, want %d", cfg.MaxSessions, 100)
@@ -27,7 +27,7 @@ func TestManagerConfig(t *testing.T) {
 // TestManagerStats 测试 Stats 返回值
 func TestManagerStats(t *testing.T) {
 	m := NewManager(ManagerConfig{
-		SessionRoot: "/tmp/strata/sessions",
+		SessionRoot: "/tmp/steadary/sessions",
 		Driver:      DriverNone,
 		MaxSessions: 10,
 		TTL:         time.Minute,
@@ -42,7 +42,7 @@ func TestManagerStats(t *testing.T) {
 // TestManagerCloseNonExistent 测试关闭不存在的 session
 func TestManagerCloseNonExistent(t *testing.T) {
 	m := NewManager(ManagerConfig{
-		SessionRoot: "/tmp/strata/sessions",
+		SessionRoot: "/tmp/steadary/sessions",
 		Driver:      DriverNone,
 		MaxSessions: 10,
 		TTL:         time.Minute,
@@ -58,7 +58,7 @@ func TestManagerCloseNonExistent(t *testing.T) {
 // TestManagerGetNonExistent 测试获取不存在的 session
 func TestManagerGetNonExistent(t *testing.T) {
 	m := NewManager(ManagerConfig{
-		SessionRoot: "/tmp/strata/sessions",
+		SessionRoot: "/tmp/steadary/sessions",
 		Driver:      DriverNone,
 		MaxSessions: 10,
 		TTL:         time.Minute,
@@ -79,7 +79,7 @@ func TestManagerMaxSessions(t *testing.T) {
 	}
 
 	m := NewManager(ManagerConfig{
-		SessionRoot: "/tmp/strata/sessions",
+		SessionRoot: "/tmp/steadary/sessions",
 		Driver:      DriverNone,
 		MaxSessions: 1,
 		TTL:         time.Minute,

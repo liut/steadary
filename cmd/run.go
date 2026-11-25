@@ -16,11 +16,11 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
-	"github.com/liut/strata/pkg/config"
-	"github.com/liut/strata/pkg/mcp"
-	"github.com/liut/strata/pkg/rpc"
-	"github.com/liut/strata/pkg/sandbox"
-	"github.com/liut/strata/pkg/webapi"
+	"github.com/liut/steadary/pkg/config"
+	"github.com/liut/steadary/pkg/mcp"
+	"github.com/liut/steadary/pkg/rpc"
+	"github.com/liut/steadary/pkg/sandbox"
+	"github.com/liut/steadary/pkg/webapi"
 )
 
 var runCmd = &cobra.Command{
@@ -39,7 +39,7 @@ func runAll(cmd *cobra.Command, args []string) error {
 	// 设置全局配置
 	config.Current = cfg
 
-	slog.Info("starting strata", "version", config.Version)
+	slog.Info("starting steadary", "version", config.Version)
 	slog.Info("lightweight session sandbox service")
 
 	// 检查运行环境依赖

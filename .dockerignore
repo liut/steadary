@@ -15,8 +15,8 @@ dist/*
 !dist/linux_amd64/
 !dist/linux_arm64/
 bin/
-strata
-strata-*
+steadary
+steadary-*
 
 # Test files
 *_test.go

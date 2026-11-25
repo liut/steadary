@@ -1,4 +1,4 @@
-# Strata
+# Steadary
 
 > 轻量级会话沙箱 — 基于 Namespace + Overlayfs 的隔离 Shell
 
@@ -44,7 +44,7 @@
 make build
 
 # 运行
-./dist/strata run
+./dist/steadary run
 ```
 
 以上命令面向 Linux，因为 bubblewrap 依赖 Linux namespace。
@@ -96,22 +96,44 @@ MCP 端点: `http://localhost:2280/mcp/`
 
 AI Agent 使用:
 ```bash
-npx tsx scripts/strata-mcp.ts
+npx tsx scripts/steadary-mcp.ts
 ```
 
 ## 配置
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `STRATA_SERVER_ADDR` | `:2280` | 监听地址 (HOST:PORT 合并) |
-| `STRATA_SERVER_SHELL_TIMEOUT` | `30s` | 命令执行默认超时 (HTTP/MCP exec) |
-| `STRATA_SERVER_EDIT_TIMEOUT` | `30s` | MCP edit 调用超时 |
-| `STRATA_SANDBOX_SESSION_ROOT` | `/tmp/strata/sessions` | 会话目录 |
-| `STRATA_SANDBOX_SESSION_TTL` | `30m` | 会话超时 |
-| `STRATA_SANDBOX_MAX_SESSIONS` | `100` | 最大会话数 |
-| `STRATA_SANDBOX_OVERLAY_DRIVER` | `fuse` | fuse/kernel/none |
+| `STEADARY_SERVER_ADDR` | `:2280` | 监听地址 (HOST:PORT 合并) |
+| `STEADARY_SERVER_SHELL_TIMEOUT` | `30s` | 命令执行默认超时 (HTTP/MCP exec) |
+| `STEADARY_SERVER_EDIT_TIMEOUT` | `30s` | MCP edit 调用超时 |
+| `STEADARY_SANDBOX_SESSION_ROOT` | `/tmp/steadary/sessions` | 会话目录 |
+| `STEADARY_SANDBOX_SESSION_TTL` | `30m` | 会话超时 |
+| `STEADARY_SANDBOX_MAX_SESSIONS` | `100` | 最大会话数 |
+| `STEADARY_SANDBOX_OVERLAY_DRIVER` | `fuse` | fuse/kernel/none |
 
-所有配置均通过 `STRATA_*` 环境变量加载，上表列出常用项。
+所有配置均通过 `STEADARY_*` 环境变量加载，上表列出常用项。
+
+## 从旧名称升级
+
+本项目此前名为 Strata。本次更名是**硬切换**，不提供任何兼容别名：
+
+| 项目 | 旧名称 | 新名称 |
+|------|--------|--------|
+| CLI 命令 | `strata` | `steadary` |
+| 环境变量前缀 | `STRATA_*` | `STEADARY_*` |
+| 默认会话目录 | `/tmp/strata/sessions` | `/tmp/steadary/sessions` |
+| 二进制 | `dist/strata` | `dist/steadary` |
+| 容器镜像 / 容器名 | `strata:runtime` / `strata` | `steadary:runtime` / `steadary` |
+| 命名卷 | `strata-sessions` | `steadary-sessions` |
+
+**API 接口保持不变**：REST 路由、请求与响应字段、状态码，WebSocket 路由与消息结构，
+gRPC 服务 `sandbox.SandboxService`，以及 MCP 端点 `/mcp/` 及其 `exec`、`read`、`write`、
+`edit` 工具的名称与参数结构均未变化，仅服务器显示名称改变。
+
+`scripts/steadary-mcp.ts` 中的 StdIO 包装器保留 `strata_exec` 与 `strata_stats`
+工具标识——它们是该包装器自身的 MCP 契约的一部分，属于有意保留。
+
+已有会话目录与命名卷**不会自动迁移**，请视为可丢弃的运行时状态，并通过显式配置完成切换。
 
 ## 身份标识
 

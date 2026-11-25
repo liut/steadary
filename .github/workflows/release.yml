@@ -56,20 +56,20 @@ jobs:
           VERSION: ${{ steps.version.outputs.VERSION }}
         run: |
           echo "version: $VERSION"
-          GOOS=linux GOARCH=amd64 go build -ldflags "-X github.com/liut/strata/pkg/config.Version=$VERSION -s -w" -o strata-linux-amd64 .
-          GOOS=linux GOARCH=arm64 go build -ldflags "-X github.com/liut/strata/pkg/config.Version=$VERSION -s -w" -o strata-linux-arm64 .
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X github.com/liut/steadary/pkg/config.Version=$VERSION -s -w" -o steadary-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X github.com/liut/steadary/pkg/config.Version=$VERSION -s -w" -o steadary-linux-arm64 .
 
       - name: Package
         run: |
-          tar -cvJf strata-linux-amd64-${{ steps.version.outputs.VERSION }}.tar.xz -C . strata-linux-amd64
-          tar -cvJf strata-linux-arm64-${{ steps.version.outputs.VERSION }}.tar.xz -C . strata-linux-arm64
+          tar -cvJf steadary-linux-amd64-${{ steps.version.outputs.VERSION }}.tar.xz -C . steadary-linux-amd64
+          tar -cvJf steadary-linux-arm64-${{ steps.version.outputs.VERSION }}.tar.xz -C . steadary-linux-arm64
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            strata-linux-amd64-*.tar.xz
-            strata-linux-arm64-*.tar.xz
+            steadary-linux-amd64-*.tar.xz
+            steadary-linux-arm64-*.tar.xz
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

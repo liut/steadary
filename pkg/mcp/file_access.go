@@ -285,7 +285,7 @@ func (w *workspace) atomicReplace(ctx context.Context, rel string, data []byte, 
 		if _, err := rand.Read(random[:]); err != nil {
 			return fmt.Errorf("create temporary file name: %w", err)
 		}
-		tempRel = path.Join(dir, ".strata-tmp-"+hex.EncodeToString(random[:]))
+		tempRel = path.Join(dir, ".steadary-tmp-"+hex.EncodeToString(random[:]))
 		f, err = w.root.OpenFile(tempRel, os.O_WRONLY|os.O_CREATE|os.O_EXCL, mode)
 		if err == nil {
 			break

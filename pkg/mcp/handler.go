@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/liut/strata/pkg/identity"
-	"github.com/liut/strata/pkg/sandbox"
-	"github.com/liut/strata/pkg/webapi"
+	"github.com/liut/steadary/pkg/identity"
+	"github.com/liut/steadary/pkg/sandbox"
+	"github.com/liut/steadary/pkg/webapi"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )

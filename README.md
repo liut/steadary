@@ -1,4 +1,4 @@
-# Strata
+# Steadary
 
 > Lightweight Session Sandbox — Isolated Shell via Namespace + Overlayfs
 
@@ -44,7 +44,7 @@
 make build
 
 # Run
-./dist/strata run
+./dist/steadary run
 ```
 
 The commands above target Linux because bubblewrap depends on Linux namespaces.
@@ -89,9 +89,9 @@ Modern requests carry protocol metadata and method headers on every request; no
 continues to support legacy initialize-based clients through protocol version
 `2025-11-25`.
 
-Strata sandbox state remains explicit across requests through `owner_id` and
+Steadary sandbox state remains explicit across requests through `owner_id` and
 `session_id` arguments or the `X-Owner-Id` and `X-Session-Id` headers.
-`X-Session-Id` identifies a Strata sandbox session; it is unrelated to the
+`X-Session-Id` identifies a Steadary sandbox session; it is unrelated to the
 removed `Mcp-Session-Id` transport header.
 
 | Tool | Description |
@@ -106,33 +106,60 @@ File tools accept relative paths from the session workspace or absolute paths un
 files larger than 4 MiB. `write` requires the parent directory to exist. See
 [MCP file tools](./docs/edit-tool.md) for argument shapes and edit matching rules.
 
-Run the live endpoint smoke test in modern mode, or set `STRATA_MCP_LEGACY=1`
+Run the live endpoint smoke test in modern mode, or set `STEADARY_MCP_LEGACY=1`
 to exercise the initialize/session compatibility path:
 
 ```bash
 npx tsx scripts/test-mcp.ts
-STRATA_MCP_LEGACY=1 npx tsx scripts/test-mcp.ts
+STEADARY_MCP_LEGACY=1 npx tsx scripts/test-mcp.ts
 ```
 
 For AI agents:
 ```bash
-npx tsx scripts/strata-mcp.ts
+npx tsx scripts/steadary-mcp.ts
 ```
 
 ## Config
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `STRATA_SERVER_ADDR` | `:2280` | Listen address (HOST:PORT combined) |
-| `STRATA_SERVER_SHELL_TIMEOUT` | `30s` | Default shell command timeout (HTTP/MCP exec) |
-| `STRATA_SERVER_EDIT_TIMEOUT` | `30s` | MCP edit timeout |
-| `STRATA_SANDBOX_SESSION_ROOT` | `/tmp/strata/sessions` | Session directory |
-| `STRATA_SANDBOX_SESSION_TTL` | `30m` | Session timeout |
-| `STRATA_SANDBOX_MAX_SESSIONS` | `100` | Max sessions |
-| `STRATA_SANDBOX_OVERLAY_DRIVER` | `fuse` | fuse/kernel/none |
+| `STEADARY_SERVER_ADDR` | `:2280` | Listen address (HOST:PORT combined) |
+| `STEADARY_SERVER_SHELL_TIMEOUT` | `30s` | Default shell command timeout (HTTP/MCP exec) |
+| `STEADARY_SERVER_EDIT_TIMEOUT` | `30s` | MCP edit timeout |
+| `STEADARY_SANDBOX_SESSION_ROOT` | `/tmp/steadary/sessions` | Session directory |
+| `STEADARY_SANDBOX_SESSION_TTL` | `30m` | Session timeout |
+| `STEADARY_SANDBOX_MAX_SESSIONS` | `100` | Max sessions |
+| `STEADARY_SANDBOX_OVERLAY_DRIVER` | `fuse` | fuse/kernel/none |
 
-All settings are loaded from `STRATA_*` environment variables. The table lists the
+All settings are loaded from `STEADARY_*` environment variables. The table lists the
 most commonly used values.
+
+## Upgrading from the Previous Name
+
+This project was previously named Strata. The rename is a **hard break** with no
+compatibility aliases:
+
+| Item | Old | New |
+|------|-----|-----|
+| CLI command | `strata` | `steadary` |
+| Environment prefix | `STRATA_*` | `STEADARY_*` |
+| Default session root | `/tmp/strata/sessions` | `/tmp/steadary/sessions` |
+| Binary | `dist/strata` | `dist/steadary` |
+| Container image / name | `strata:runtime` / `strata` | `steadary:runtime` / `steadary` |
+| Named volume | `strata-sessions` | `steadary-sessions` |
+
+The API surface is **unchanged**: REST routes, request and response fields,
+status codes, the WebSocket route and message shapes, the gRPC service
+`sandbox.SandboxService`, and the MCP endpoint `/mcp/` with its `exec`, `read`,
+`write`, and `edit` tools all keep their existing names and schemas. Only the
+server display name changed.
+
+The StdIO wrapper in `scripts/steadary-mcp.ts` keeps its `strata_exec` and
+`strata_stats` tool identifiers; those are part of that wrapper's own MCP
+contract and are intentionally unchanged.
+
+Existing session directories and named volumes are **not migrated** — treat them
+as disposable runtime state and roll over with explicit configuration.
 
 ## Identity
 

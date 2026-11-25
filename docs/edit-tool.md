@@ -1,12 +1,12 @@
 # MCP 文件工具
 
 > 状态：已实现
-> 范围：strata MCP 工具层（`pkg/mcp`）
+> 范围：steadary MCP 工具层（`pkg/mcp`）
 > 参考实现：rpi `packages/agent/src/harness/tools/edit.ts` 及其 Rust 移植 `rpi-tools/src/tools/edit.rs`
 
 ## 1. 背景
 
-strata 的 MCP 接口提供 `exec`、`read`、`write`、`edit` 四个工具。文件工具直接操作会话持久
+steadary 的 MCP 接口提供 `exec`、`read`、`write`、`edit` 四个工具。文件工具直接操作会话持久
 工作区，避免通过 `sed` / heredoc / 重定向修改文件时出现转义、非原子写入和格式变化：
 
 - 不可预测：`sed` 换行、转义、缩进稍有不符就静默改错位置；
@@ -32,7 +32,7 @@ strata 的 MCP 接口提供 `exec`、`read`、`write`、`edit` 四个工具。�
 - MCP 传输默认使用 `2026-07-28` 无状态协议；每个请求携带协议元数据，不依赖 initialize
   或 MCP transport session。legacy initialize 客户端仍通过 `2025-11-25` 兼容路径访问同一端点。
 - MCP 身份仍使用 `owner_id` / `session_id` 参数或 `X-Owner-Id` / `X-Session-Id` 请求头，
-  并通过 `manager.GetOrCreate` 自动创建沙箱会话。`X-Session-Id` 标识 Strata 沙箱会话，
+  并通过 `manager.GetOrCreate` 自动创建沙箱会话。`X-Session-Id` 标识 Steadary 沙箱会话，
   与已移除的 `Mcp-Session-Id` transport header 无关。
 
 ### `read`
@@ -170,7 +170,7 @@ sandbox 层负责，会话根下看到什么就改什么），也不得通过 `e
 
 **R12 取消与超时**
 必须支持上下文取消；取消后不得写盘。单次调用受独立超时配置约束：新增环境变量
-`STRATA_SERVER_EDIT_TIMEOUT`（默认 `30s`，与 `STRATA_SERVER_SHELL_TIMEOUT` 相互独立）。
+`STEADARY_SERVER_EDIT_TIMEOUT`（默认 `30s`，与 `STEADARY_SERVER_SHELL_TIMEOUT` 相互独立）。
 
 **R13 文件大小上限**
 必须设置读取上限以防超大文件打爆服务内存，超限返回明确错误，不做部分处理。阈值 **4 MiB**
@@ -228,11 +228,11 @@ sandbox 层负责，会话根下看到什么就改什么），也不得通过 `e
 
 - 路径解析不区分 overlay 驱动，驱动差异由 sandbox 层承担。
 - 不提供 HTTP 端点，仅 MCP 工具。
-- 超时独立配置 `STRATA_SERVER_EDIT_TIMEOUT`，默认 `30s`。
+- 超时独立配置 `STEADARY_SERVER_EDIT_TIMEOUT`，默认 `30s`。
 - 单文件大小上限 4 MiB。
 - `read` 使用 1 起算的可选 `start_line` / `line_count`；`write` 不创建父目录；三者共享
   UTF-8、4 MiB 和工作区边界。
-- `edit` 单独受 `STRATA_SERVER_EDIT_TIMEOUT` 控制，默认 `30s`。
+- `edit` 单独受 `STEADARY_SERVER_EDIT_TIMEOUT` 控制，默认 `30s`。
 
 ## 8. 参考实现要点
 

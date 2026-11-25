@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liut/strata/pkg/config"
+	"github.com/liut/steadary/pkg/config"
 )
 
 var logLevel string
@@ -33,8 +33,8 @@ func initSlog(levelStr string) {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "strata",
-	Short: "strata - lightweight session sandbox service",
+	Use:   "steadary",
+	Short: "steadary - lightweight session sandbox service",
 	Run: func(cmd *cobra.Command, args []string) {
 		_ = cmd.Help()
 	},

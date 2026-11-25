@@ -10,7 +10,7 @@
 HOST="${1:-localhost:2280}"
 USER="testuser"
 SESSION="shell-test-$$"
-PROTO="${STRATA_PROTO:-./pkg/proto/sandbox/sandbox.proto}"
+PROTO="${STEADARY_PROTO:-./pkg/proto/sandbox/sandbox.proto}"
 
 echo "=== gRPC Test ==="
 echo "Server: $HOST"

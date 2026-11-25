@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Strata 环境依赖检查脚本
+# Steadary 环境依赖检查脚本
 # 运行此脚本确保目标机器满足所有运行时依赖
 
 set -e
@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo "╔════════════════════════════════════════════════════════╗"
-echo "║           Strata Environment Check                                         ║"
+echo "║           Steadary Environment Check                                         ║"
 echo "╚════════════════════════════════════════════════════════╝"
 echo
 
@@ -115,10 +115,10 @@ echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 if [ $ERRORS -eq 0 ]; then
-    echo -e "${GREEN}All checks passed! Strata should run fine.${NC}"
+    echo -e "${GREEN}All checks passed! Steadary should run fine.${NC}"
     exit 0
 else
     echo -e "${RED}$ERRORS check(s) failed.${NC}"
-    echo "Please fix the above issues before running Strata."
+    echo "Please fix the above issues before running Steadary."
     exit 1
 fi

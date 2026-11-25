@@ -11,21 +11,21 @@
 The runtime image consumes a prebuilt `linux/amd64` binary:
 
 ```bash
-make dist/linux_amd64/strata
-docker build -t strata:runtime -f docker/runtime.Dockerfile .
+make dist/linux_amd64/steadary
+docker build -t steadary:runtime -f docker/runtime.Dockerfile .
 ```
 
 To build the binary and image from source in one stage, use the full build image:
 
 ```bash
-docker build -t strata:runtime -f docker/fullbuild.Dockerfile .
+docker build -t steadary:runtime -f docker/fullbuild.Dockerfile .
 ```
 
 The Compose file uses the runtime-only Dockerfile, so build the binary before
 invoking Compose:
 
 ```bash
-make dist/linux_amd64/strata
+make dist/linux_amd64/steadary
 docker compose build
 ```
 
@@ -35,13 +35,13 @@ docker compose build
 docker compose up -d
 
 # Or manually
-docker run -d --name strata --privileged \
-  -e STRATA_SANDBOX_OVERLAY_DRIVER=kernel \
-  -e STRATA_SERVER_SHELL_TIMEOUT=45s \
-  -e STRATA_SERVER_EDIT_TIMEOUT=45s \
+docker run -d --name steadary --privileged \
+  -e STEADARY_SANDBOX_OVERLAY_DRIVER=kernel \
+  -e STEADARY_SERVER_SHELL_TIMEOUT=45s \
+  -e STEADARY_SERVER_EDIT_TIMEOUT=45s \
   -m 1g \
-  -p 2280:2280 -v strata-sessions:/tmp/strata/sessions \
-  strata:runtime
+  -p 2280:2280 -v steadary-sessions:/tmp/steadary/sessions \
+  steadary:runtime
 ```
 
 For macOS without Docker, see the
@@ -60,15 +60,15 @@ It uses `docker/apple-runtime.Dockerfile` with the native arm64 binary.
 
 | Variable | Default |
 |----------|---------|
-| STRATA_SERVER_ADDR | :2280 |
-| STRATA_SANDBOX_SESSION_ROOT | /tmp/strata/sessions |
-| STRATA_SANDBOX_SESSION_TTL | 30m |
+| STEADARY_SERVER_ADDR | :2280 |
+| STEADARY_SANDBOX_SESSION_ROOT | /tmp/steadary/sessions |
+| STEADARY_SANDBOX_SESSION_TTL | 30m |
 | PATH | /root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin |
 
 ## Troubleshooting
 
-If `docker compose build` reports a missing `dist/linux_amd64/strata`, run
-`make dist/linux_amd64/strata` first. The Compose service uses
+If `docker compose build` reports a missing `dist/linux_amd64/steadary`, run
+`make dist/linux_amd64/steadary` first. The Compose service uses
 `docker/runtime.Dockerfile`, which copies an existing binary rather than compiling it.
 
 ## pip / npm Install Locations

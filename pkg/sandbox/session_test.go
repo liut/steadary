@@ -153,7 +153,7 @@ func TestOverlayMountSessionDir(t *testing.T) {
 		upper    string
 		expected string
 	}{
-		{"/tmp/strata/sessions/key/upper", "/tmp/strata/sessions/key"},
+		{"/tmp/steadary/sessions/key/upper", "/tmp/steadary/sessions/key"},
 		{"/a/upper", "/a"},
 		// 边界情况：路径太短时返回原值
 		{"/upper", "/upper"},

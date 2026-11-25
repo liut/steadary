@@ -1,8 +1,8 @@
 .SILENT:
 .PHONY: help gen-rpc clean dist build test vet lint package-linux package-linux-arm64
 
-NAME:=strata
-ROOF:=github.com/liut/strata
+NAME:=steadary
+ROOF:=github.com/liut/steadary
 DATE:=$(shell date '+%Y%m%d')
 TAG:=$(shell git describe --tags --always 2>/dev/null || echo "dev")
 GO:=$(shell which go)
@@ -19,7 +19,7 @@ help:
 	@echo "  make gen-rpc      - Generate protobuf code"
 	@echo "  make dist         - Build for all platforms"
 	@echo "  make dist VERSION=xxx - Build with custom version"
-	@echo "  make dist/linux_arm64/strata - Build Linux arm64"
+	@echo "  make dist/linux_arm64/steadary - Build Linux arm64"
 	@echo "  make build        - Build for local platform"
 	@echo "  make test         - Run unit and package tests"
 	@echo "  make clean        - Clean build artifacts"

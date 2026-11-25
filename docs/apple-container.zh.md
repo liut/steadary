@@ -1,9 +1,9 @@
-# 使用 Apple Container 运行 Strata
+# 使用 Apple Container 运行 Steadary
 
 Apple 的 [`container`](https://github.com/apple/container) 会在 Apple Silicon 上通过
 轻量 Linux VM 运行 OCI 容器，不依赖 Docker。
 
-这是现有 Linux 实现的一种部署方式：Strata 仍运行在 Linux VM 内，并为每个会话启动
+这是现有 Linux 实现的一种部署方式：Steadary 仍运行在 Linux VM 内，并为每个会话启动
 bubblewrap 和 overlayfs。它不是原生 macOS 沙箱后端。
 
 ## 环境要求
@@ -33,10 +33,10 @@ macOS 26 及更高版本还会用「本地网络」隐私权限限制宿主机�
 Apple Silicon 应原生运行 arm64 容器。先构建 arm64 二进制，再构建镜像：
 
 ```bash
-make dist/linux_arm64/strata
+make dist/linux_arm64/steadary
 container build --progress plain \
   --arch arm64 \
-  -t strata:apple-arm64 \
+  -t steadary:apple-arm64 \
   -f docker/apple-runtime.Dockerfile .
 ```
 
@@ -46,7 +46,7 @@ container build --progress plain \
 container build --progress plain \
   --arch arm64 \
   --build-arg BASE_IMAGE=docker.1ms.run/library/alpine:latest \
-  -t strata:apple-arm64 \
+  -t steadary:apple-arm64 \
   -f docker/apple-runtime.Dockerfile .
 ```
 
@@ -60,15 +60,15 @@ Linux VM 内必须具有 `CAP_SYS_ADMIN`。否则 bubblewrap 无法创建会话 
 bwrap: Creating new namespace failed: Operation not permitted
 ```
 
-启动 Strata：
+启动 Steadary：
 
 ```bash
 container run -d --rm \
-  --name strata \
+  --name steadary \
   --cap-add SYS_ADMIN \
-  --volume strata-sessions:/tmp/strata/sessions \
+  --volume steadary-sessions:/tmp/steadary/sessions \
   -p 2280:2280 \
-  strata:apple-arm64
+  steadary:apple-arm64
 ```
 
 该 capability 只授予容器所在的 Linux VM，不会直接授予 macOS 宿主机进程。
@@ -85,26 +85,26 @@ curl http://127.0.0.1:2280/api/stats
 IP 作为兜底：
 
 ```bash
-container inspect strata
+container inspect steadary
 curl http://<container-ip>:2280/api/stats
 ```
 
 使用该地址运行 API 测试：
 
 ```bash
-STRATA_ADDR=<container-ip>:2280 ./scripts/test-api.sh
+STEADARY_ADDR=<container-ip>:2280 ./scripts/test-api.sh
 ```
 
 MCP 测试同样使用该地址：
 
 ```bash
-STRATA_MCP=http://<container-ip>:2280/mcp/ bun run scripts/test-mcp.ts
+STEADARY_MCP=http://<container-ip>:2280/mcp/ bun run scripts/test-mcp.ts
 ```
 
 也可以从容器内部访问：
 
 ```bash
-container exec strata curl -sS http://127.0.0.1:2280/api/stats
+container exec steadary curl -sS http://127.0.0.1:2280/api/stats
 ```
 
 ## 发布端口重置连接
@@ -116,10 +116,10 @@ curl http://127.0.0.1:2280/api/stats
 curl: (56) Recv failure: Connection reset by peer
 ```
 
-这不是 Strata 的问题。所有容器的所有发布端口都会受影响，而容器本身是健康的：
+这不是 Steadary 的问题。所有容器的所有发布端口都会受影响，而容器本身是健康的：
 
 ```bash
-container exec strata curl -sS http://127.0.0.1:2280/api/stats   # 正常
+container exec steadary curl -sS http://127.0.0.1:2280/api/stats   # 正常
 curl http://<container-ip>:2280/api/stats                        # 正常
 ```
 
@@ -143,7 +143,7 @@ macOS 26 及更高版本会把宿主机侧的发布端口置于「本地网络�
 
 ```bash
 container list                                  # IP 在第 6 列
-IP=$(container list | awk '$1=="strata"{print $6}' | cut -d/ -f1)
+IP=$(container list | awk '$1=="steadary"{print $6}' | cut -d/ -f1)
 curl http://$IP:2280/api/stats
 ```
 
@@ -162,7 +162,7 @@ Apple `container` 通过签名的
 所以要先停掉正在运行的容器：
 
 ```bash
-container stop strata
+container stop steadary
 container system stop
 launchctl list | grep 'com\.apple\.container'   # 必须为空
 
@@ -173,7 +173,7 @@ container system start
 ```
 
 升级脚本从 GitHub releases 下载签名包，用 `sudo installer` 重新安装到 `/usr/local`。
-容器不会在升级后保留，需要用原来的 `container run` 命令重新创建 `strata`。
+容器不会在升级后保留，需要用原来的 `container run` 命令重新创建 `steadary`。
 
 只有在该架构没有配置默认 kernel 时，`container system start` 才会询问是否安装。
 脚本里可以用 `--enable-kernel-install` 直接回答「是」，避免交互。
@@ -183,13 +183,13 @@ container system start
 创建并执行会话：
 
 ```bash
-container exec strata curl -sS \
+container exec steadary curl -sS \
   -X POST \
   -H 'Content-Type: application/json' \
   -d '{"owner_id":"alice","session_id":"task-001"}' \
   http://127.0.0.1:2280/api/sessions
 
-container exec strata curl -sS \
+container exec steadary curl -sS \
   -X POST \
   -H 'Content-Type: application/json' \
   -d '{"command":"hostname; ps -o pid,ppid,comm"}' \
@@ -201,7 +201,7 @@ container exec strata curl -sS \
 排查问题时查看外层进程：
 
 ```bash
-container exec strata ps -ef
+container exec steadary ps -ef
 ```
 
 输出中应同时存在 `fuse-overlayfs` 和生成的 `bwrap` 命令。
@@ -209,9 +209,9 @@ container exec strata ps -ef
 ## 清理
 
 ```bash
-container stop strata
-container image delete strata:apple-arm64
-container volume delete strata-sessions
+container stop steadary
+container image delete steadary:apple-arm64
+container volume delete steadary-sessions
 make clean
 ```
 

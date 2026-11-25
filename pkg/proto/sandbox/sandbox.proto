@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sandbox;
 
-option go_package = "github.com/liut/strata/proto/sandbox";
+option go_package = "github.com/liut/steadary/proto/sandbox";
 
 // SandboxService 提供 gRPC 沙盒操作接口
 service SandboxService {

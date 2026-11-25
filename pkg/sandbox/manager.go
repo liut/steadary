@@ -103,7 +103,7 @@ func (m *Manager) GetOrCreate(ownerID, sessionID string) (*Session, error) {
 
 	if len(m.sessions) >= m.maxSessions {
 		slog.Warn("GetOrCreate: max sessions reached", "current", len(m.sessions), "max", m.maxSessions)
-		return nil, fmt.Errorf("strata: max sessions (%d) reached", m.maxSessions)
+		return nil, fmt.Errorf("steadary: max sessions (%d) reached", m.maxSessions)
 	}
 
 	// slog.Debug("GetOrCreate: creating new session", "key", key, "currentSessions", len(m.sessions))

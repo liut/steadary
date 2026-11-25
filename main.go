@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/liut/strata/cmd"
+	"github.com/liut/steadary/cmd"
 )
 
 func main() {

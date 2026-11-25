@@ -19,8 +19,8 @@ func TestDefaultConfig(t *testing.T) {
 	if cfg.Server.EditTimeout != 30*time.Second {
 		t.Errorf("EditTimeout = %v, want %v", cfg.Server.EditTimeout, 30*time.Second)
 	}
-	if cfg.Sandbox.SessionRoot != "/tmp/strata/sessions" {
-		t.Errorf("SessionRoot = %q, want %q", cfg.Sandbox.SessionRoot, "/tmp/strata/sessions")
+	if cfg.Sandbox.SessionRoot != "/tmp/steadary/sessions" {
+		t.Errorf("SessionRoot = %q, want %q", cfg.Sandbox.SessionRoot, "/tmp/steadary/sessions")
 	}
 	if cfg.Sandbox.SessionTTL != 30*time.Minute {
 		t.Errorf("SessionTTL = %v, want %v", cfg.Sandbox.SessionTTL, 30*time.Minute)
@@ -36,19 +36,19 @@ func TestDefaultConfig(t *testing.T) {
 // TestLoadEnvVars 测试从环境变量加载配置
 func TestLoadEnvVars(t *testing.T) {
 	// 设置环境变量
-	_ = os.Setenv("STRATA_SERVER_ADDR", ":9090")
-	_ = os.Setenv("STRATA_SERVER_EDIT_TIMEOUT", "45s")
-	_ = os.Setenv("STRATA_SANDBOX_SESSION_ROOT", "/custom/sessions")
-	_ = os.Setenv("STRATA_SANDBOX_SESSION_TTL", "60m")
-	_ = os.Setenv("STRATA_SANDBOX_MAX_SESSIONS", "50")
-	_ = os.Setenv("STRATA_SANDBOX_OVERLAY_DRIVER", "none")
+	_ = os.Setenv("STEADARY_SERVER_ADDR", ":9090")
+	_ = os.Setenv("STEADARY_SERVER_EDIT_TIMEOUT", "45s")
+	_ = os.Setenv("STEADARY_SANDBOX_SESSION_ROOT", "/custom/sessions")
+	_ = os.Setenv("STEADARY_SANDBOX_SESSION_TTL", "60m")
+	_ = os.Setenv("STEADARY_SANDBOX_MAX_SESSIONS", "50")
+	_ = os.Setenv("STEADARY_SANDBOX_OVERLAY_DRIVER", "none")
 	defer func() {
-		_ = os.Unsetenv("STRATA_SERVER_ADDR")
-		_ = os.Unsetenv("STRATA_SERVER_EDIT_TIMEOUT")
-		_ = os.Unsetenv("STRATA_SANDBOX_SESSION_ROOT")
-		_ = os.Unsetenv("STRATA_SANDBOX_SESSION_TTL")
-		_ = os.Unsetenv("STRATA_SANDBOX_MAX_SESSIONS")
-		_ = os.Unsetenv("STRATA_SANDBOX_OVERLAY_DRIVER")
+		_ = os.Unsetenv("STEADARY_SERVER_ADDR")
+		_ = os.Unsetenv("STEADARY_SERVER_EDIT_TIMEOUT")
+		_ = os.Unsetenv("STEADARY_SANDBOX_SESSION_ROOT")
+		_ = os.Unsetenv("STEADARY_SANDBOX_SESSION_TTL")
+		_ = os.Unsetenv("STEADARY_SANDBOX_MAX_SESSIONS")
+		_ = os.Unsetenv("STEADARY_SANDBOX_OVERLAY_DRIVER")
 	}()
 
 	cfg, err := Load()
@@ -79,12 +79,12 @@ func TestLoadEnvVars(t *testing.T) {
 // TestLoadDefaults 测试使用默认值（无环境变量）
 func TestLoadDefaults(t *testing.T) {
 	// 确保没有环境变量干扰
-	_ = os.Unsetenv("STRATA_SERVER_ADDR")
-	_ = os.Unsetenv("STRATA_SERVER_EDIT_TIMEOUT")
-	_ = os.Unsetenv("STRATA_SANDBOX_SESSION_ROOT")
-	_ = os.Unsetenv("STRATA_SANDBOX_SESSION_TTL")
-	_ = os.Unsetenv("STRATA_SANDBOX_MAX_SESSIONS")
-	_ = os.Unsetenv("STRATA_SANDBOX_OVERLAY_DRIVER")
+	_ = os.Unsetenv("STEADARY_SERVER_ADDR")
+	_ = os.Unsetenv("STEADARY_SERVER_EDIT_TIMEOUT")
+	_ = os.Unsetenv("STEADARY_SANDBOX_SESSION_ROOT")
+	_ = os.Unsetenv("STEADARY_SANDBOX_SESSION_TTL")
+	_ = os.Unsetenv("STEADARY_SANDBOX_MAX_SESSIONS")
+	_ = os.Unsetenv("STEADARY_SANDBOX_OVERLAY_DRIVER")
 
 	cfg, err := Load()
 	if err != nil {
@@ -98,8 +98,8 @@ func TestLoadDefaults(t *testing.T) {
 	if cfg.Server.EditTimeout != 30*time.Second {
 		t.Errorf("EditTimeout = %v, want %v", cfg.Server.EditTimeout, 30*time.Second)
 	}
-	if cfg.Sandbox.SessionRoot != "/tmp/strata/sessions" {
-		t.Errorf("SessionRoot = %q, want %q", cfg.Sandbox.SessionRoot, "/tmp/strata/sessions")
+	if cfg.Sandbox.SessionRoot != "/tmp/steadary/sessions" {
+		t.Errorf("SessionRoot = %q, want %q", cfg.Sandbox.SessionRoot, "/tmp/steadary/sessions")
 	}
 	if cfg.Sandbox.SessionTTL != 30*time.Minute {
 		t.Errorf("SessionTTL = %v, want %v", cfg.Sandbox.SessionTTL, 30*time.Minute)
@@ -113,9 +113,33 @@ func TestLoadDefaults(t *testing.T) {
 }
 
 func TestLoadRejectsNonPositiveEditTimeout(t *testing.T) {
-	t.Setenv("STRATA_SERVER_EDIT_TIMEOUT", "0s")
+	t.Setenv("STEADARY_SERVER_EDIT_TIMEOUT", "0s")
 	if _, err := Load(); err == nil {
 		t.Fatal("expected non-positive edit timeout to fail")
+	}
+}
+
+// TestLegacyStrataEnvVarsAreIgnored 验证硬更名后过时的 STRATA_* 变量
+// 不再覆盖 Steadary 配置。
+func TestLegacyStrataEnvVarsAreIgnored(t *testing.T) {
+	// 只设置旧前缀变量
+	t.Setenv("STRATA_SERVER_ADDR", ":9999")
+	t.Setenv("STRATA_SANDBOX_SESSION_ROOT", "/old/sessions")
+	t.Setenv("STRATA_SANDBOX_OVERLAY_DRIVER", "none")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("failed to load config: %v", err)
+	}
+
+	if cfg.Server.Addr != ":2280" {
+		t.Errorf("Server.Addr = %q, want %q (STRATA_SERVER_ADDR must be ignored)", cfg.Server.Addr, ":2280")
+	}
+	if cfg.Sandbox.SessionRoot != "/tmp/steadary/sessions" {
+		t.Errorf("SessionRoot = %q, want %q (STRATA_SANDBOX_SESSION_ROOT must be ignored)", cfg.Sandbox.SessionRoot, "/tmp/steadary/sessions")
+	}
+	if cfg.Sandbox.OverlayDriver != "fuse" {
+		t.Errorf("OverlayDriver = %q, want %q (STRATA_SANDBOX_OVERLAY_DRIVER must be ignored)", cfg.Sandbox.OverlayDriver, "fuse")
 	}
 }
 

@@ -1,6 +1,6 @@
 // cli.go - Interactive CLI shell
 //
-// Usage: strata cli [--addr host:port] [--user userid] [--session sessionid]
+// Usage: steadary cli [--addr host:port] [--user userid] [--session sessionid]
 package cmd
 
 import (
@@ -18,7 +18,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "github.com/liut/strata/pkg/proto/sandbox"
+	pb "github.com/liut/steadary/pkg/proto/sandbox"
 )
 
 var (
@@ -30,7 +30,7 @@ var (
 var cliCmd = &cobra.Command{
 	Use:   "cli",
 	Short: "Interactive shell client",
-	Long:  `Connect to strata server and start an interactive shell session.`,
+	Long:  `Connect to steadary server and start an interactive shell session.`,
 	RunE:  runCLI,
 }
 
@@ -47,7 +47,7 @@ func runCLI(cmd *cobra.Command, args []string) error {
 		cliSession = fmt.Sprintf("cli-%d", os.Getpid())
 	}
 
-	fmt.Printf("=== Strata CLI ===\n")
+	fmt.Printf("=== Steadary CLI ===\n")
 	fmt.Printf("Server: %s\n", cliAddr)
 	fmt.Printf("User: %s\n", cliUser)
 	fmt.Printf("Session: %s\n", cliSession)

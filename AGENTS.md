@@ -1,11 +1,11 @@
 # AGENTS.md — Developer Guide
 
-> For AI agents and developers who need to understand, modify, or extend Strata.
+> For AI agents and developers who need to understand, modify, or extend Steadary.
 
 ## Project Structure
 
 ```
-strata/
+steadary/
 ├── cmd/                    # Entry points
 │   ├── run.go              # Server (HTTP + gRPC + MCP)
 │   ├── root.go             # CLI root
@@ -128,7 +128,7 @@ func (h *handlerImpl) Route(mux Handler) {
 driver := sandbox.OverlayDriver("kernel")
 
 # Or via env
-STRATA_SANDBOX_OVERLAY_DRIVER=kernel ./dist/strata run
+STEADARY_SANDBOX_OVERLAY_DRIVER=kernel ./dist/steadary run
 ```
 
 ### Identity Parsing
@@ -149,7 +149,7 @@ sc, err := identity.ParseScarf(ctx, r.PathValue, identity.FromHeader(r.Header))
 
 ```bash
 go test ./...
-make build && ./dist/strata run
+make build && ./dist/steadary run
 ./scripts/test-api.sh
 ```
 
@@ -162,7 +162,7 @@ For the macOS Apple Container deployment path, see
 |-------|----------|
 | bwrap: permissions error on Linux | Verify unprivileged user namespaces; do not apply file capabilities to modern bwrap |
 | bwrap: namespace error in a container | Grant `CAP_SYS_ADMIN` to the container, for example `--cap-add SYS_ADMIN` |
-| overlay mount failed | Try `STRATA_SANDBOX_OVERLAY_DRIVER=none` |
+| overlay mount failed | Try `STEADARY_SANDBOX_OVERLAY_DRIVER=none` |
 | session hangs | `pkill -f "bwrap.*sessionID"` |
 
 For dependency installation, see [README.md](./README.md#dependencies).

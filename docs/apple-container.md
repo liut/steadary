@@ -1,9 +1,9 @@
-# Running Strata with Apple Container
+# Running Steadary with Apple Container
 
 Apple's [`container`](https://github.com/apple/container) runs OCI containers in
 lightweight Linux virtual machines on Apple silicon. It does not require Docker.
 
-This is a deployment mode for the existing Linux implementation: Strata still runs
+This is a deployment mode for the existing Linux implementation: Steadary still runs
 inside a Linux VM and starts each session with bubblewrap and overlayfs. It is not a
 native macOS sandbox backend.
 
@@ -35,10 +35,10 @@ connection. See [Published ports reset the connection](#published-ports-reset-th
 Apple silicon runs arm64 containers natively. Build the arm64 binary and image:
 
 ```bash
-make dist/linux_arm64/strata
+make dist/linux_arm64/steadary
 container build --progress plain \
   --arch arm64 \
-  -t strata:apple-arm64 \
+  -t steadary:apple-arm64 \
   -f docker/apple-runtime.Dockerfile .
 ```
 
@@ -49,7 +49,7 @@ available image:
 container build --progress plain \
   --arch arm64 \
   --build-arg BASE_IMAGE=docker.1ms.run/library/alpine:latest \
-  -t strata:apple-arm64 \
+  -t steadary:apple-arm64 \
   -f docker/apple-runtime.Dockerfile .
 ```
 
@@ -64,15 +64,15 @@ the session namespaces:
 bwrap: Creating new namespace failed: Operation not permitted
 ```
 
-Start Strata:
+Start Steadary:
 
 ```bash
 container run -d --rm \
-  --name strata \
+  --name steadary \
   --cap-add SYS_ADMIN \
-  --volume strata-sessions:/tmp/strata/sessions \
+  --volume steadary-sessions:/tmp/steadary/sessions \
   -p 2280:2280 \
-  strata:apple-arm64
+  steadary:apple-arm64
 ```
 
 The capability is granted inside the container's Linux VM, not directly to a macOS
@@ -91,26 +91,26 @@ If the connection is reset, follow
 The container IP works as a fallback:
 
 ```bash
-container inspect strata
+container inspect steadary
 curl http://<container-ip>:2280/api/stats
 ```
 
 Run the API checks against that address:
 
 ```bash
-STRATA_ADDR=<container-ip>:2280 ./scripts/test-api.sh
+STEADARY_ADDR=<container-ip>:2280 ./scripts/test-api.sh
 ```
 
 Run the MCP checks against that address as well:
 
 ```bash
-STRATA_MCP=http://<container-ip>:2280/mcp/ bun run scripts/test-mcp.ts
+STEADARY_MCP=http://<container-ip>:2280/mcp/ bun run scripts/test-mcp.ts
 ```
 
 The API is also reachable from inside the container:
 
 ```bash
-container exec strata curl -sS http://127.0.0.1:2280/api/stats
+container exec steadary curl -sS http://127.0.0.1:2280/api/stats
 ```
 
 ## Published ports reset the connection
@@ -122,11 +122,11 @@ curl http://127.0.0.1:2280/api/stats
 curl: (56) Recv failure: Connection reset by peer
 ```
 
-This is not a Strata problem. Every published port of every container is
+This is not a Steadary problem. Every published port of every container is
 affected, and the container itself stays healthy:
 
 ```bash
-container exec strata curl -sS http://127.0.0.1:2280/api/stats   # works
+container exec steadary curl -sS http://127.0.0.1:2280/api/stats   # works
 curl http://<container-ip>:2280/api/stats                        # works
 ```
 
@@ -152,7 +152,7 @@ upgrade involved.
 
 ```bash
 container list                                  # IP is the sixth column
-IP=$(container list | awk '$1=="strata"{print $6}' | cut -d/ -f1)
+IP=$(container list | awk '$1=="steadary"{print $6}' | cut -d/ -f1)
 curl http://$IP:2280/api/stats
 ```
 
@@ -171,7 +171,7 @@ The updater refuses to run while any `com.apple.container*` launchd job is
 registered, so stop the running containers first:
 
 ```bash
-container stop strata
+container stop steadary
 container system stop
 launchctl list | grep 'com\.apple\.container'   # must be empty
 
@@ -183,7 +183,7 @@ container system start
 
 The updater downloads the signed package from GitHub releases and reinstalls it
 over `/usr/local` with `sudo installer`. Containers do not survive the upgrade:
-recreate `strata` with the original `container run` command.
+recreate `steadary` with the original `container run` command.
 
 `container system start` only prompts about the default kernel when no kernel is
 configured for the architecture. Add `--enable-kernel-install` to answer that
@@ -194,13 +194,13 @@ prompt non-interactively in scripts.
 Create and exercise a session:
 
 ```bash
-container exec strata curl -sS \
+container exec steadary curl -sS \
   -X POST \
   -H 'Content-Type: application/json' \
   -d '{"owner_id":"alice","session_id":"task-001"}' \
   http://127.0.0.1:2280/api/sessions
 
-container exec strata curl -sS \
+container exec steadary curl -sS \
   -X POST \
   -H 'Content-Type: application/json' \
   -d '{"command":"hostname; ps -o pid,ppid,comm"}' \
@@ -212,7 +212,7 @@ The process tree inside the session should start with `bwrap` as PID 1.
 Inspect the outer process tree when troubleshooting:
 
 ```bash
-container exec strata ps -ef
+container exec steadary ps -ef
 ```
 
 It should contain both `fuse-overlayfs` and the generated `bwrap` command.
@@ -220,9 +220,9 @@ It should contain both `fuse-overlayfs` and the generated `bwrap` command.
 ## Cleanup
 
 ```bash
-container stop strata
-container image delete strata:apple-arm64
-container volume delete strata-sessions
+container stop steadary
+container image delete steadary:apple-arm64
+container volume delete steadary-sessions
 make clean
 ```
 
