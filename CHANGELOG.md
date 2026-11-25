@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **Rename**: the project is now Steadary. The CLI command, the `STEADARY_*` environment variable prefix, the default session root (`/tmp/steadary/sessions`), build artifacts, container images, container names, and volume names all use the new identity
+- **Hard break**: the old `strata` executable and the `STRATA_*` environment variables are no longer recognized; there are no compatibility aliases
+
+### Compatibility
+
+- The REST API is unchanged: same routes, request and response fields, status codes, and `owner_id` / `session_id` / `X-Owner-Id` / `X-Session-Id` identity semantics
+- The WebSocket API is unchanged, including its message shapes
+- The gRPC API is unchanged: the package, service, and methods remain `sandbox.SandboxService` with the same five methods
+- The MCP API is unchanged: the endpoint remains `/mcp/`, and the core tools remain `exec`, `read`, `write`, and `edit` with unchanged argument names. Only the server display name changed
+- The StdIO wrapper keeps its `strata_exec` and `strata_stats` tool identifiers, which are part of that wrapper's own MCP contract
+
+### Notes
+
+- Existing session directories and named volumes are not migrated; treat them as disposable runtime state and roll over with explicit configuration
+- The default listen port remains `2280`
+
 ## v0.2.0
 
 Expanded the MCP file workflow and protocol support, and added an Apple Container deployment path.

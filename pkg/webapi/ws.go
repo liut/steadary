@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/liut/strata/pkg/identity"
+	"github.com/liut/steadary/pkg/identity"
 )
 
 var upgrader = websocket.Upgrader{

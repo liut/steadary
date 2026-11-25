@@ -17,7 +17,7 @@ import (
 	"syscall"
 	"time"
 
-	pb "github.com/liut/strata/pkg/proto/sandbox"
+	pb "github.com/liut/steadary/pkg/proto/sandbox"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -141,7 +141,7 @@ func main() {
 				commands := []string{
 					"pwd\n",
 					"ls -la\n",
-					"echo 'Hello from strata' > test.txt\n",
+					"echo 'Hello from steadary' > test.txt\n",
 					"cat test.txt\n",
 					"mkdir -p demoDir\n",
 					"touch demoDir/file1.txt demoDir/file2.txt\n",

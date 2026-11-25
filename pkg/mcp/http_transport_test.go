@@ -11,8 +11,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/liut/steadary/pkg/identity"
 	"github.com/mark3labs/mcp-go/mcp"
 )
+
+// testServerName 是 MCP 测试服务器显示名。品牌更名时只需更新此处，
+// 端点、工具清单与身份头契约必须保持不变。
+const testServerName = "steadary"
 
 type rpcResponse struct {
 	JSONRPC string         `json:"jsonrpc"`
@@ -29,8 +34,13 @@ type rpcError struct {
 
 func newMCPHTTPTestServer(t *testing.T) *httptest.Server {
 	t.Helper()
+	return newMCPHTTPTestServerNamed(t, testServerName)
+}
 
-	handler := NewHandler(nil, "strata", "test", 30*time.Second, 30*time.Second)
+func newMCPHTTPTestServerNamed(t *testing.T, name string) *httptest.Server {
+	t.Helper()
+
+	handler := NewHandler(nil, name, "test", 30*time.Second, 30*time.Second)
 	mux := http.NewServeMux()
 	handler.Route(mux)
 
@@ -43,7 +53,7 @@ func modernRequestMeta() map[string]any {
 	return map[string]any{
 		mcp.MetaKeyProtocolVersion: mcp.ProtocolVersion20260728,
 		mcp.MetaKeyClientInfo: map[string]any{
-			"name":    "strata-test",
+			"name":    "steadary-test",
 			"version": "1.0.0",
 		},
 		mcp.MetaKeyClientCapabilities: map[string]any{},
@@ -194,6 +204,49 @@ func rpcToolNames(t *testing.T, result map[string]any) string {
 	return strings.Join(names, ",")
 }
 
+// TestMCPDisplayNameIndependentOfToolContract 验证 MCP 显示名只是元数据：
+// 不同的显示名不得改变 /mcp/ 端点或工具清单。
+func TestMCPDisplayNameIndependentOfToolContract(t *testing.T) {
+	for _, name := range []string{testServerName, "display-name-probe"} {
+		t.Run(name, func(t *testing.T) {
+			srv := newMCPHTTPTestServerNamed(t, name)
+
+			resp := postModernRPC(t, srv, mcp.MethodToolsList, nil, nil)
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("status=%d, want %d", resp.StatusCode, http.StatusOK)
+			}
+			if resp.Request.URL.Path != "/mcp/" {
+				t.Fatalf("request path=%q, want registered /mcp/ endpoint", resp.Request.URL.Path)
+			}
+
+			message := decodeRPCResponse(t, resp)
+			if message.Error != nil {
+				t.Fatalf("unexpected error: %+v", message.Error)
+			}
+			if got, want := rpcToolNames(t, message.Result), "edit,exec,read,write"; got != want {
+				t.Fatalf("tools=%q, want %q regardless of display name %q", got, want, name)
+			}
+		})
+	}
+}
+
+// TestIdentityHeadersContract 锁定 MCP HTTP 传输的身份头契约：
+// X-Owner-Id 与 X-Session-Id 头必须被解析为调用身份。
+func TestIdentityHeadersContract(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/mcp/", nil)
+	req.Header.Set("X-Owner-Id", "owner-1")
+	req.Header.Set("X-Session-Id", "sess-1")
+
+	ctx := builtContextFromRequest(req.Context(), req)
+	sc, ok := identity.ScarfFromContext(ctx)
+	if !ok {
+		t.Fatal("identity scarf missing from request context")
+	}
+	if sc.OwnerID != "owner-1" || sc.SessionID != "sess-1" {
+		t.Errorf("scarf=(%q,%q), want (owner-1,sess-1)", sc.OwnerID, sc.SessionID)
+	}
+}
+
 func TestModernHTTPDiscover(t *testing.T) {
 	srv := newMCPHTTPTestServer(t)
 
@@ -223,8 +276,8 @@ func TestModernHTTPDiscover(t *testing.T) {
 		t.Fatalf("result _meta=%T, want object", message.Result["_meta"])
 	}
 	serverInfo, ok := meta[mcp.MetaKeyServerInfo].(map[string]any)
-	if !ok || serverInfo["name"] != "strata" {
-		t.Fatalf("serverInfo=%v, want Strata identity", meta[mcp.MetaKeyServerInfo])
+	if !ok || serverInfo["name"] != testServerName {
+		t.Fatalf("serverInfo=%v, want server name %q", meta[mcp.MetaKeyServerInfo], testServerName)
 	}
 }
 

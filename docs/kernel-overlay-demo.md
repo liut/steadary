@@ -1,6 +1,6 @@
 # Kernel 模式演示（内核 overlayfs）
 
-strata 的 overlay 驱动 `kernel` 使用内核 overlayfs（而非 fuse-overlayfs），需要 Linux ≥ 5.11
+steadary 的 overlay 驱动 `kernel` 使用内核 overlayfs（而非 fuse-overlayfs），需要 Linux ≥ 5.11
 与 `unshare` 命令（依赖检查见 `scripts/check-env.sh`）。
 
 实现上区分两种运行环境（见 `pkg/sandbox/overlay.go`）：
@@ -14,7 +14,7 @@ strata 的 overlay 驱动 `kernel` 使用内核 overlayfs（而非 fuse-overlayf
 ## 启用
 
 ```bash
-STRATA_SANDBOX_OVERLAY_DRIVER=kernel ./dist/strata run
+STEADARY_SANDBOX_OVERLAY_DRIVER=kernel ./dist/steadary run
 ```
 
 ## 手动演示挂载（非 root 路径）
@@ -51,7 +51,7 @@ unshare --user --mount --map-root-user bash -c '
     --proc /proc --dev /dev --tmpfs /tmp --tmpfs /run \
     --bind /tmp/kernel_overlay/upper /root --chdir /root \
     --unshare-pid --unshare-ipc --unshare-uts \
-    --hostname strata --die-with-parent \
+    --hostname steadary --die-with-parent \
     --setenv HOME /root --setenv USER root --setenv TERM xterm-256color \
     --setenv PATH /usr/local/bin:/usr/bin:/bin:/sbin \
     -- bash

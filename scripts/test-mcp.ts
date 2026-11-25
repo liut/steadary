@@ -1,21 +1,21 @@
 #!/usr/bin/env bun
 
 /**
- * Strata MCP Test Script
+ * Steadary MCP Test Script
  *
  * Tests the MCP server via HTTP JSON-RPC.
  *
  * Usage:
  *   bun run scripts/test-mcp.ts
- *   STRATA_MCP_LEGACY=1 bun run scripts/test-mcp.ts
+ *   STEADARY_MCP_LEGACY=1 bun run scripts/test-mcp.ts
  *
  * Environment:
- *   STRATA_MCP   MCP server URL (default: http://localhost:2280/mcp/)
- *   STRATA_MCP_LEGACY  Use the legacy initialize/session flow (default: false)
+ *   STEADARY_MCP   MCP server URL (default: http://localhost:2280/mcp/)
+ *   STEADARY_MCP_LEGACY  Use the legacy initialize/session flow (default: false)
  */
 
-const MCP_URL = process.env.STRATA_MCP || "http://localhost:2280/mcp/";
-const LEGACY = process.env.STRATA_MCP_LEGACY === "1";
+const MCP_URL = process.env.STEADARY_MCP || "http://localhost:2280/mcp/";
+const LEGACY = process.env.STEADARY_MCP_LEGACY === "1";
 const MODERN_PROTOCOL_VERSION = "2026-07-28";
 const LEGACY_PROTOCOL_VERSION = "2025-11-25";
 const USER = "testuser";
@@ -42,7 +42,7 @@ function modernMeta(): Record<string, any> {
   return {
     "io.modelcontextprotocol/protocolVersion": MODERN_PROTOCOL_VERSION,
     "io.modelcontextprotocol/clientInfo": {
-      name: "strata-smoke-test",
+      name: "steadary-smoke-test",
       version: "1.0.0",
     },
     "io.modelcontextprotocol/clientCapabilities": {},
@@ -106,7 +106,7 @@ async function test(name: string, fn: () => Promise<void>): Promise<void> {
 }
 
 async function main() {
-  console.warn("=== Strata MCP Test ===");
+  console.warn("=== Steadary MCP Test ===");
   console.warn(`URL: ${MCP_URL}`);
   console.warn(`User: ${USER}`);
   console.warn(`Session: ${SESSION}`);

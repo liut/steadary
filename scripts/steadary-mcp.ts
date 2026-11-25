@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
 /**
- * Strata API wrap as a StdIO MCP Server
+ * Steadary API wrap as a StdIO MCP Server
  *
  * Provides sandboxed shell operations for AI Agents via MCP protocol.
- * Communicates with Strata server over HTTP.
+ * Communicates with Steadary server over HTTP.
  *
  * Environment Variables:
- *   STRATA_API    Strata server URL (default: http://localhost:2280)
- *   STRATA_UID    Default user ID (optional, identity from header or args)
+ *   STEADARY_API    Steadary server URL (default: http://localhost:2280)
+ *   STEADARY_UID    Default user ID (optional, identity from header or args)
  *
  * Usage:
- *   npx tsx scripts/strata-mcp.ts
+ *   npx tsx scripts/steadary-mcp.ts
  *   # or with fixed user:
- *   STRATA_UID=alice npx tsx scripts/strata-mcp.ts
+ *   STEADARY_UID=alice npx tsx scripts/steadary-mcp.ts
  *
  * Protocol: STDIO (MCP standard)
  *   The server communicates with the AI agent via stdin/stdout.
@@ -26,13 +26,13 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const API_BASE = process.env.STRATA_API || "http://localhost:2280";
-const STRATA_UID = process.env.STRATA_UID?.trim() || "";
+const API_BASE = process.env.STEADARY_API || "http://localhost:2280";
+const STEADARY_UID = process.env.STEADARY_UID?.trim() || "";
 
-// Dynamically build tools based on STRATA_UID presence
+// Dynamically build tools based on STEADARY_UID presence
 function buildTools() {
-  const ownerIdProp = STRATA_UID
-    ? { description: `User ID (fixed to ${STRATA_UID})` }
+  const ownerIdProp = STEADARY_UID
+    ? { description: `User ID (fixed to ${STEADARY_UID})` }
     : { type: "string", description: "User identifier" };
 
   return [
@@ -69,7 +69,7 @@ async function apiCall<T>(path: string, body?: any): Promise<T> {
   });
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`strata API error: ${res.status} ${err}`);
+    throw new Error(`steadary API error: ${res.status} ${err}`);
   }
   return res.json();
 }
@@ -81,12 +81,12 @@ const TOOLS = buildTools();
 // Server Implementation
 // ─────────────────────────────────────────────────────────
 
-class StrataMCPServer {
+class SteadaryMCPServer {
   private server: Server;
 
   constructor() {
     this.server = new Server(
-      { name: "strata", version: "0.1.0" },
+      { name: "steadary", version: "0.1.0" },
       { capabilities: { tools: {} } }
     );
 
@@ -116,7 +116,7 @@ class StrataMCPServer {
   async start() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.warn("Strata MCP server started");
+    console.warn("Steadary MCP server started");
   }
 
   // ─────────────────────────────────────────
@@ -124,7 +124,7 @@ class StrataMCPServer {
   // ─────────────────────────────────────────
 
   private async handleExec(args: any) {
-    const owner_id = args.owner_id || STRATA_UID;
+    const owner_id = args.owner_id || STEADARY_UID;
     const session_id = args.session_id;
     const { command, timeout_ms = 30000 } = args;
 
@@ -150,7 +150,7 @@ class StrataMCPServer {
 }
 
 // Start the server
-new StrataMCPServer().start().catch((err) => {
+new SteadaryMCPServer().start().catch((err) => {
   console.error("Fatal:", err);
   process.exit(1);
 });

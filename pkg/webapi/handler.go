@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/liut/strata/pkg/identity"
-	"github.com/liut/strata/pkg/sandbox"
+	"github.com/liut/steadary/pkg/identity"
+	"github.com/liut/steadary/pkg/sandbox"
 )
 
 // Handler 接口用于注册路由

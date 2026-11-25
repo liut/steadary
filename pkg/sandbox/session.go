@@ -294,7 +294,7 @@ func newSession(opts sessionOptions) (*Session, error) {
 	homeDir := filepath.Join(sessionDir, "home")
 
 	if err := os.MkdirAll(homeDir, 0700); err != nil {
-		return nil, fmt.Errorf("strata/session: mkdir home: %w", err)
+		return nil, fmt.Errorf("steadary/session: mkdir home: %w", err)
 	}
 
 	// 使用 Manager 初始化好的 base rootfs 作为 lower
@@ -335,7 +335,7 @@ func newSession(opts sessionOptions) (*Session, error) {
 	if err != nil {
 		slog.Error("pty.Start failed", "error", err, "cmd", cmd.Args)
 		_ = overlay.Cleanup()
-		return nil, fmt.Errorf("strata/session: pty start: %w", err)
+		return nil, fmt.Errorf("steadary/session: pty start: %w", err)
 	}
 	slog.Debug("pty.Start succeeded", "pid", cmd.Process.Pid)
 
@@ -357,7 +357,7 @@ func newSession(opts sessionOptions) (*Session, error) {
 		if err != nil {
 			slog.Error("bwrap fallback pty.Start failed", "error", err)
 			_ = overlay.Cleanup()
-			return nil, fmt.Errorf("strata/session: bwrap fallback pty start: %w", err)
+			return nil, fmt.Errorf("steadary/session: bwrap fallback pty start: %w", err)
 		}
 		if !alive {
 			slog.Warn("bwrap fallback also exited immediately, trying unshare fallback",
@@ -373,7 +373,7 @@ func newSession(opts sessionOptions) (*Session, error) {
 			if err != nil {
 				slog.Error("unshare fallback pty.Start failed", "error", err)
 				_ = overlay.Cleanup()
-				return nil, fmt.Errorf("strata/session: unshare fallback pty start: %w", err)
+				return nil, fmt.Errorf("steadary/session: unshare fallback pty start: %w", err)
 			}
 			if !alive {
 				slog.Error("unshare fallback also failed",
@@ -381,7 +381,7 @@ func newSession(opts sessionOptions) (*Session, error) {
 					"stderr", stderrBuf.String())
 				_ = ptmx.Close()
 				_ = overlay.Cleanup()
-				return nil, fmt.Errorf("strata/session: unshare fallback exited with code %d", cmd.ProcessState.ExitCode())
+				return nil, fmt.Errorf("steadary/session: unshare fallback exited with code %d", cmd.ProcessState.ExitCode())
 			}
 		}
 	}
@@ -427,7 +427,7 @@ func buildBwrapWithOverlay(ov *OverlayMount, homeDir string, isolateNet bool) *e
 	//       --bind merged / --proc /proc --dev /dev --tmpfs /tmp --tmpfs /run
 	//       --bind homeDir /root --ro-bind /etc/resolv.conf /etc/resolv.conf
 	//       --unshare-pid --unshare-ipc --unshare-uts [--unshare-net]
-	//       --hostname strata --die-with-parent
+	//       --hostname steadary --die-with-parent
 	//       --setenv HOME /root --setenv USER root --setenv TERM xterm-256color \
 	//       --setenv PATH /root/.local/bin:/usr/local/bin:/usr/bin:/bin:/sbin
 	//       -- bash
@@ -465,7 +465,7 @@ func buildBwrapWithOverlay(ov *OverlayMount, homeDir string, isolateNet bool) *e
 	}
 	args = append(args,
 		"--unshare-pid", "--unshare-ipc", "--unshare-uts",
-		"--hostname", "strata",
+		"--hostname", "steadary",
 		"--die-with-parent",
 		"--setenv", "HOME", "/root",
 		"--setenv", "USER", "root",
@@ -523,7 +523,7 @@ func buildBwrapFallback(homeDir string, isolateNet bool) *exec.Cmd {
 	}
 	args = append(args,
 		"--unshare-pid", "--unshare-ipc", "--unshare-uts",
-		"--hostname", "strata",
+		"--hostname", "steadary",
 		"--die-with-parent",
 		"--setenv", "HOME", "/root",
 		"--setenv", "USER", "root",
@@ -558,7 +558,7 @@ func buildUnshareFallback(homeDir string, isolateNet bool) *exec.Cmd {
 		mount --bind %s /root 2>/dev/null || true
 
 		# 设置 hostname
-		hostname strata 2>/dev/null || true
+		hostname steadary 2>/dev/null || true
 
 		# 启动 shell
 		exec %s --login

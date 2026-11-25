@@ -10,7 +10,7 @@ import (
 
 // Config 应用配置
 type Config struct {
-	Name string `ignored:"true" default:"strata"`
+	Name string `ignored:"true" default:"steadary"`
 
 	Server  ServerConfig  `envconfig:"SERVER"`
 	Sandbox SandboxConfig `envconfig:"SANDBOX"`
@@ -31,7 +31,7 @@ type SandboxConfig struct {
 	// 基础只读根文件系统路径；为空则自动 fallback 到宿主目录 bind
 	BaseRootfs string `envconfig:"BASE_ROOTFS" desc:"Base read-only rootfs path"`
 
-	SessionRoot string        `envconfig:"SESSION_ROOT" default:"/tmp/strata/sessions" desc:"Session working directory root"`
+	SessionRoot string        `envconfig:"SESSION_ROOT" default:"/tmp/steadary/sessions" desc:"Session working directory root"`
 	SessionTTL  time.Duration `envconfig:"SESSION_TTL" default:"30m" desc:"Inactive session timeout"`
 	MaxSessions int           `envconfig:"MAX_SESSIONS" default:"100" desc:"Global max session count"`
 
@@ -58,11 +58,11 @@ func Load() (*Config, error) {
 	cfg := new(Config)
 
 	// 从环境变量加载
-	if err := envconfig.Process("strata", cfg); err != nil {
+	if err := envconfig.Process("steadary", cfg); err != nil {
 		return nil, err
 	}
 	if cfg.Server.EditTimeout <= 0 {
-		return nil, fmt.Errorf("STRATA_SERVER_EDIT_TIMEOUT must be positive")
+		return nil, fmt.Errorf("STEADARY_SERVER_EDIT_TIMEOUT must be positive")
 	}
 
 	return cfg, nil
@@ -71,5 +71,5 @@ func Load() (*Config, error) {
 // Usage 打印配置帮助信息
 func Usage() error {
 	log.Printf("ver: %s", Version)
-	return envconfig.Usage("strata", Current)
+	return envconfig.Usage("steadary", Current)
 }

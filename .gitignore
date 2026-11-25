@@ -1,11 +1,11 @@
 # Binaries
 /bin/
-/strata
-/strata-grpc
+/steadary
+/steadary-grpc
 
 # Session data
-/tmp/strata/
-/tmp/strata-sessions/
+/tmp/steadary/
+/tmp/steadary-sessions/
 
 # Build artifacts
 *.o

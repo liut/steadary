@@ -9,14 +9,14 @@ variables:
   DEVELOP_HOST: moon
   DEPLOY_HOST: earth
   DEPLOY_USER: sa
-  DEPLOY_ROOT: /opt/strata
+  DEPLOY_ROOT: /opt/steadary
   CGO_ENABLED: '0'
   GO111MODULE: 'on'
   GOPATH: /cache/go
   GOPRIVATE: daxv.cn,hyyl.xyz
   GOPROXY: https://goproxy.cn,direct
-  NAME: strata
-  ROOF: github.com/liut/strata
+  NAME: steadary
+  ROOF: github.com/liut/steadary
 
 before_script:
   # SSH

@@ -36,7 +36,7 @@ func (o *OverlayMount) Mount() error {
 	for _, d := range []string{o.Upper, o.Work, o.Merged} {
 		if err := os.MkdirAll(d, 0700); err != nil {
 			slog.Error("overlay mkdir failed", "dir", d, "error", err)
-			return fmt.Errorf("strata/overlay: mkdir %s: %w", d, err)
+			return fmt.Errorf("steadary/overlay: mkdir %s: %w", d, err)
 		}
 	}
 
@@ -69,14 +69,14 @@ func (o *OverlayMount) Mount() error {
 func (o *OverlayMount) mountFuse() error {
 	bin, err := exec.LookPath("fuse-overlayfs")
 	if err != nil {
-		return fmt.Errorf("strata/overlay: fuse-overlayfs not found (apt install fuse-overlayfs): %w", err)
+		return fmt.Errorf("steadary/overlay: fuse-overlayfs not found (apt install fuse-overlayfs): %w", err)
 	}
 
 	opts := fmt.Sprintf("lowerdir=%s,upperdir=%s,workdir=%s", o.Lower, o.Upper, o.Work)
 	out, err := exec.Command(bin, "-o", opts, o.Merged).CombinedOutput()
 	if err != nil {
 		slog.Error("mount fuse failed", "opts", opts, "merged", o.Merged)
-		return fmt.Errorf("strata/overlay: fuse mount failed: %w\n%s", err, out)
+		return fmt.Errorf("steadary/overlay: fuse mount failed: %w\n%s", err, out)
 	}
 	return nil
 }
@@ -126,7 +126,7 @@ func (o *OverlayMount) Umount() error {
 	// kernel 直接挂载：直接用 umount -l（不走 fusermount）
 	if o.driver == DriverKernel {
 		if err := exec.Command("umount", "-l", o.Merged).Run(); err != nil {
-			return fmt.Errorf("strata/overlay: umount failed: %w", err)
+			return fmt.Errorf("steadary/overlay: umount failed: %w", err)
 		}
 		return nil
 	}
@@ -134,7 +134,7 @@ func (o *OverlayMount) Umount() error {
 	// fuse 驱动：优先使用 fusermount，fallback 到 umount -l
 	if err := exec.Command("fusermount", "-u", o.Merged).Run(); err != nil {
 		if err2 := exec.Command("umount", "-l", o.Merged).Run(); err2 != nil {
-			return fmt.Errorf("strata/overlay: umount failed: fusermount: %v, umount: %v", err, err2)
+			return fmt.Errorf("steadary/overlay: umount failed: fusermount: %v, umount: %v", err, err2)
 		}
 	}
 	return nil
@@ -145,14 +145,14 @@ func (o *OverlayMount) Cleanup() error {
 	umountErr := o.Umount()
 	// 无论卸载是否成功都尝试删除目录，避免残留
 	if err := os.RemoveAll(o.sessionDir()); err != nil {
-		return fmt.Errorf("strata/overlay: cleanup failed: %v (umount: %v)", err, umountErr)
+		return fmt.Errorf("steadary/overlay: cleanup failed: %v (umount: %v)", err, umountErr)
 	}
 	return umountErr
 }
 
 // sessionDir 返回 upper/work/merged 的上级目录
 func (o *OverlayMount) sessionDir() string {
-	// Upper 形如 /tmp/strata/sessions/<key>/upper，取父目录
+	// Upper 形如 /tmp/steadary/sessions/<key>/upper，取父目录
 	if len(o.Upper) > 6 {
 		return o.Upper[:len(o.Upper)-6] // 去掉 "/upper"
 	}

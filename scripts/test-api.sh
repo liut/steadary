@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Strata API 测试脚本
+# Steadary API 测试脚本
 # 对已运行的 web 服务进行完整流程检测
 #
 
@@ -41,9 +41,9 @@ check_dependencies
 # 配置
 # ───────────────────────────────────────────────────────────
 # 默认配置
-STRATA_ADDR="${STRATA_ADDR:-localhost:2280}"
-BASE_URL="http://${STRATA_ADDR}"
-WS_URL="ws://${STRATA_ADDR}"
+STEADARY_ADDR="${STEADARY_ADDR:-localhost:2280}"
+BASE_URL="http://${STEADARY_ADDR}"
+WS_URL="ws://${STEADARY_ADDR}"
 
 # 颜色定义
 RED='\033[0;31m'
@@ -128,7 +128,7 @@ test_exec_command() {
     local resp
     resp=$(curl -s -X POST "${BASE_URL}/api/sessions/${TEST_USER}/${TEST_SESSION}/exec" \
         -H "Content-Type: application/json" \
-        -d '{"command": "echo hello_strata_test"}')
+        -d '{"command": "echo hello_steadary_test"}')
 
     if echo "$resp" | grep -q "output"; then
         log_pass "执行命令成功: $resp"
@@ -338,7 +338,7 @@ test_invalid_command() {
 
 main() {
     echo "============================================"
-    echo "  Strata API 完整流程测试"
+    echo "  Steadary API 完整流程测试"
     echo "  Base URL: ${BASE_URL}"
     echo "============================================"
     echo

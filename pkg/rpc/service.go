@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	pb "github.com/liut/strata/pkg/proto/sandbox"
-	"github.com/liut/strata/pkg/sandbox"
-	"github.com/liut/strata/pkg/webapi"
+	pb "github.com/liut/steadary/pkg/proto/sandbox"
+	"github.com/liut/steadary/pkg/sandbox"
+	"github.com/liut/steadary/pkg/webapi"
 	"google.golang.org/grpc"
 )
 

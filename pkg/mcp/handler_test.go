@@ -11,7 +11,7 @@ import (
 )
 
 func TestSetupToolsInventory(t *testing.T) {
-	h := NewHandler(nil, "strata", "test", 30*time.Second, 45*time.Second)
+	h := NewHandler(nil, "steadary", "test", 30*time.Second, 45*time.Second)
 	tools := h.mcps.ListTools()
 	names := make([]string, 0, len(tools))
 	for name := range tools {
@@ -40,7 +40,7 @@ func TestSetupToolsInventory(t *testing.T) {
 }
 
 func TestFileToolsRejectMissingIdentity(t *testing.T) {
-	h := NewHandler(nil, "strata", "test", 30*time.Second, 30*time.Second)
+	h := NewHandler(nil, "steadary", "test", 30*time.Second, 30*time.Second)
 	tests := []struct {
 		name string
 		call func(context.Context, map[string]any) (*mcp.CallToolResult, error)
@@ -79,7 +79,7 @@ func TestFileToolsRejectMissingIdentity(t *testing.T) {
 }
 
 func TestEditValidationReturnsToolErrorBeforeSessionLookup(t *testing.T) {
-	h := NewHandler(nil, "strata", "test", 30*time.Second, 30*time.Second)
+	h := NewHandler(nil, "steadary", "test", 30*time.Second, 30*time.Second)
 	result, err := h.handleEdit(context.Background(), map[string]any{
 		"path":  "file.txt",
 		"edits": []any{},

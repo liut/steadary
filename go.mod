@@ -1,4 +1,4 @@
-module github.com/liut/strata
+module github.com/liut/steadary
 
 go 1.25.5
 

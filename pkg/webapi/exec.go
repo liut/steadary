@@ -9,14 +9,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/liut/strata/pkg/config"
-	"github.com/liut/strata/pkg/identity"
+	"github.com/liut/steadary/pkg/config"
+	"github.com/liut/steadary/pkg/identity"
 )
 
 // ExecRequest 非交互式命令执行请求
 type ExecRequest struct {
 	Command   string `json:"command"`
-	TimeoutMs int    `json:"timeout_ms"` // 默认 STRATA_SERVER_SHELL_TIMEOUT
+	TimeoutMs int    `json:"timeout_ms"` // 默认 STEADARY_SERVER_SHELL_TIMEOUT
 }
 
 // ExecResponse 命令执行结果
@@ -81,7 +81,7 @@ type SessionExecuter interface {
 // ExecInSession 在指定 session 中执行命令并返回输出
 // 返回: output, 是否截断, error
 func ExecInSession(sess SessionExecuter, cmd string, timeout time.Duration) (string, bool, error) {
-	marker := fmt.Sprintf("__STRATA_EXEC_END_%s__", sess.ID())
+	marker := fmt.Sprintf("__STEADARY_EXEC_END_%s__", sess.ID())
 	fullCmd := cmd + "; echo '" + marker + "'\n"
 
 	slog.Debug("executing", "cmd", cmd, "timeout", timeout.String())

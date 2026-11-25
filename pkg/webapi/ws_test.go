@@ -5,6 +5,38 @@ import (
 	"testing"
 )
 
+// TestWsMessageContract 锁定 ws 消息的 JSON 字段名契约：
+// input/output/resize/error 四种消息类型的线上形状不得改变。
+func TestWsMessageContract(t *testing.T) {
+	tests := []struct {
+		name string
+		msg  wsMessage
+		want map[string]any
+	}{
+		{"input", wsMessage{Type: "input", Data: "ls\n"}, map[string]any{"type": "input", "data": "ls\n"}},
+		{"output", wsMessage{Type: "output", Data: "total 0"}, map[string]any{"type": "output", "data": "total 0"}},
+		{"error", wsMessage{Type: "error", Data: "session closed"}, map[string]any{"type": "error", "data": "session closed"}},
+		{"resize", wsMessage{Type: "resize", Rows: 24, Cols: 80}, map[string]any{"type": "resize", "rows": float64(24), "cols": float64(80)}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data, err := json.Marshal(tt.msg)
+			if err != nil {
+				t.Fatalf("failed to marshal: %v", err)
+			}
+			var decoded map[string]any
+			if err := json.Unmarshal(data, &decoded); err != nil {
+				t.Fatalf("failed to unmarshal: %v", err)
+			}
+			for key, want := range tt.want {
+				if decoded[key] != want {
+					t.Errorf("%s[%q] = %v, want %v (full: %s)", tt.name, key, decoded[key], want, data)
+				}
+			}
+		})
+	}
+}
+
 // TestWsMessageJSONMarshal 测试 wsMessage JSON 序列化 - 环境无关
 func TestWsMessageJSONMarshal(t *testing.T) {
 	msg := wsMessage{

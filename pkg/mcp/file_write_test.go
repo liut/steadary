@@ -183,7 +183,7 @@ func TestWriteWorkspaceFileCancellationLeavesFileIntact(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, entry := range entries {
-		if strings.HasPrefix(entry.Name(), ".strata-tmp-") {
+		if strings.HasPrefix(entry.Name(), ".steadary-tmp-") {
 			t.Fatalf("temporary file leaked: %s", entry.Name())
 		}
 	}
